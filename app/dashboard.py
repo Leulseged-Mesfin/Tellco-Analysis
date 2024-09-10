@@ -13,7 +13,7 @@ if parent_path not in sys.path:
 
 # Function to fetch data from a GitHub repository
 def fetch_data_from_github():
-    url = 'https://raw.githubusercontent.com/brook1167/Telecom-Analysis/task-3/data/telecom.csv'
+    url = 'https://raw.githubusercontent.com/Leulseged-Mesfin/Tellco-Analysis/task-3/Data/data.csv'
     response = requests.get(url)
     
     if response.status_code == 200:
@@ -69,7 +69,7 @@ def impute_task_specific_values(df):
         df['Handset Type'].fillna(df['Handset Type'].mode()[0], inplace=True)
 
 # Streamlit app layout
-st.title("Telecom Data Analytics Dashboard")
+st.title("Dashboard for Telecom Data Analytics")
 
 # Sidebar for navigation
 st.sidebar.title("Choose Analysis")
