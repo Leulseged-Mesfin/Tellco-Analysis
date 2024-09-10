@@ -154,4 +154,3 @@ elif selected_option == "User Experience":
     top_rtt_users = df[['MSISDN/Number', 'Total_RTT']].sort_values('Total_RTT', ascending=False).head(10)
     
     st.write("Top 10 Users by RTT")
-    st.bar_chart(top_rtt_users.set_index('MSISDN/Number'))
