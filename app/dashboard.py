@@ -1,7 +1,6 @@
 import pandas as pd
 import streamlit as st
-import matplotlib.pyplot as plt
-import seaborn as sns
+import plotly.express as px
 import os
 import sys
 import requests
@@ -70,7 +69,7 @@ def impute_task_specific_values(df):
         df['Handset Type'].fillna(df['Handset Type'].mode()[0], inplace=True)
 
 # Streamlit app layout
-st.title("Telecom Data Analytics Dashboard")
+st.title("Dashboard for Telecom Data Analytics")
 
 # Sidebar for navigation
 st.sidebar.title("Choose Analysis")
@@ -106,6 +105,11 @@ if selected_option == "Dataset Exploration":
             impute_task_specific_values(df)
             st.success("Task-specific data filling applied.")
 
+        # Display a bar chart of missing values
+        missing_values = df.isnull().sum()
+        if missing_values.any():
+            st.bar_chart(missing_values)
+
 # User Overview Analysis
 elif selected_option == "User Overview":
     st.subheader("User Overview Analysis")
@@ -113,25 +117,13 @@ elif selected_option == "User Overview":
     # Top 10 handsets
     st.write("Top 10 Handsets")
     handset_counts = df['Handset Type'].value_counts().head(10)
-
-    # Use Matplotlib to create the bar chart
-    plt.figure(figsize=(10, 5))
-    plt.barh(handset_counts.index, handset_counts.values)
-    plt.xlabel('Count')
-    plt.ylabel('Handset Type')
-    plt.title('Top 10 Handsets')
-    st.pyplot(plt)
-
+    st.bar_chart(handset_counts)
+    
     # Top 3 handset manufacturers
     st.write("Top 3 Manufacturers")
     manufacturer_counts = df['Handset Manufacturer'].value_counts().head(3)
-
-    # Plot manufacturers
-    plt.figure(figsize=(5, 5))
-    sns.barplot(x=manufacturer_counts.values, y=manufacturer_counts.index)
-    plt.title('Top 3 Manufacturers')
-    st.pyplot(plt)
-
+    st.bar_chart(manufacturer_counts)
+    
 # User Engagement Analysis
 elif selected_option == "User Engagement":
     st.subheader("User Engagement Analysis")
@@ -145,14 +137,7 @@ elif selected_option == "User Engagement":
     }).sort_values('Total Data', ascending=False).head(10)
     
     st.write("Top 10 Users by Data Usage")
-
-    # Plot data using Matplotlib
-    plt.figure(figsize=(10, 5))
-    plt.barh(user_data.index.astype(str), user_data['Total Data'])
-    plt.xlabel('Total Data (Bytes)')
-    plt.ylabel('User')
-    plt.title('Top 10 Users by Total Data Usage')
-    st.pyplot(plt)
+    st.bar_chart(user_data['Total Data'])
 
 # User Experience Analysis
 elif selected_option == "User Experience":
@@ -163,25 +148,10 @@ elif selected_option == "User Experience":
     top_tcp_users = df[['MSISDN/Number', 'Total_TCP']].sort_values('Total_TCP', ascending=False).head(10)
     
     st.write("Top 10 Users by TCP Data")
-
-    # Plot TCP data
-    plt.figure(figsize=(10, 5))
-    plt.barh(top_tcp_users['MSISDN/Number'].astype(str), top_tcp_users['Total_TCP'])
-    plt.xlabel('Total TCP (Bytes)')
-    plt.ylabel('User')
-    plt.title('Top 10 Users by TCP Data Usage')
-    st.pyplot(plt)
-
-    # Analyze RTT
+    st.bar_chart(top_tcp_users.set_index('MSISDN/Number'))
+    
     df['Total_RTT'] = df['Avg RTT DL (ms)'] + df['Avg RTT UL (ms)']
     top_rtt_users = df[['MSISDN/Number', 'Total_RTT']].sort_values('Total_RTT', ascending=False).head(10)
     
     st.write("Top 10 Users by RTT")
-
-    # Plot RTT data
-    plt.figure(figsize=(10, 5))
-    plt.barh(top_rtt_users['MSISDN/Number'].astype(str), top_rtt_users['Total_RTT'])
-    plt.xlabel('Total RTT (ms)')
-    plt.ylabel('User')
-    plt.title('Top 10 Users by RTT')
-    st.pyplot(plt)
+    st.bar_chart(top_rtt_users.set_index('MSISDN/Number'))
